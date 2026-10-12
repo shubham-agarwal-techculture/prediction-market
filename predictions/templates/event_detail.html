@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} - Prediction Market{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>{{ event.title }}</h2>
+        <p><strong>Category:</strong> {{ event.category.name }}</p>
+        <p><strong>Type:</strong> {{ event.get_event_type_display }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+        <p><strong>Status:</strong> <span class="badge badge-{{ event.status }}">{{ event.status|title }}</span></p>
+        <p><strong>Start Time:</strong> {{ event.start_time }}</p>
+        <p><strong>End Time:</strong> {{ event.end_time }}</p>
+        
+        {% if event.entities.all %}
+            <h3>Entities</h3>
+            <ul>
+                {% for entity in event.entities.all %}
+                    <li>{{ entity.name }} ({{ entity.entity_type }})</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        {% if user.is_authenticated and event.is_active %}
+            <form method="post" action="/make-prediction/" style="margin-top: 20px;">
+                {% csrf_token %}
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <label for="predicted_outcome"><strong>Your Prediction:</strong></label>
+                <select name="predicted_outcome" id="predicted_outcome" required style="margin-left: 10px; padding: 5px;">
+                    <option value="">Select an outcome</option>
+                    {% if event.event_type == "match" %}
+                        {% for entity in event.entities.all %}
+                            <option value="{{ entity.name }}">{{ entity.name }} wins</option>
+                        {% endfor %}
+                        <option value="draw">Draw</option>
+                    {% elif event.event_type == "price" %}
+                        <option value="up">Price goes up</option>
+                        <option value="down">Price goes down</option>
+                        <option value="no_change">No change</option>
+                    {% elif event.event_type == "random" %}
+                        <option value="heads">Heads</option>
+                        <option value="tails">Tails</option>
+                    {% else %}
+                        <option value="option_a">Option A</option>
+                        <option value="option_b">Option B</option>
+                        <option value="option_c">Option C</option>
+                    {% endif %}
+                </select>
+                <button type="submit" class="btn" style="margin-left: 10px;">Submit Prediction</button>
+            </form>
+        {% elif not user.is_authenticated %}
+            <p style="margin-top: 20px;">Please <a href="/accounts/login/">login</a> to make a prediction.</p>
+        {% elif event.status == "resolved" %}
+            <p style="margin-top: 20px;"><strong>Actual Outcome:</strong> {{ event.actual_outcome }}</p>
+        {% endif %}
+    </div>
+    
+    <a href="/" class="btn" style="margin-top: 20px;">Back to Events</a>
+{% endblock %}

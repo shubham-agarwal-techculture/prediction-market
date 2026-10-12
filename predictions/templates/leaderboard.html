@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Prediction Market{% endblock %}
+
+{% block content %}
+    <h2>Leaderboard</h2>
+    
+    {% if leaderboard %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                    <th>Total Predictions</th>
+                    <th>Correct Predictions</th>
+                    <th>Win Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in leaderboard %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ entry.username }}</td>
+                        <td><strong>{{ entry.score }}</strong></td>
+                        <td>{{ entry.total_predictions }}</td>
+                        <td>{{ entry.correct_predictions }}</td>
+                        <td>{{ entry.win_rate|floatformat:2 }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No leaderboard data available yet.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Prediction Market{% endblock %}
+
+{% block content %}
+    <h2>Active Events</h2>
+    {% if events %}
+        {% for event in events %}
+            <div class="card">
+                <h3>{{ event.title }}</h3>
+                <p><strong>Category:</strong> {{ event.category.name }}</p>
+                <p><strong>Type:</strong> {{ event.get_event_type_display }}</p>
+                <p><strong>Description:</strong> {{ event.description }}</p>
+                <p><strong>Status:</strong> <span class="badge badge-{{ event.status }}">{{ event.status|title }}</span></p>
+                <p><strong>Ends:</strong> {{ event.end_time }}</p>
+                {% if user.is_authenticated and event.is_active %}
+                    <a href="/event/{{ event.id }}/" class="btn">Make Prediction</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No active events available.</p>
+    {% endif %}
+
+    <h2 style="margin-top: 30px;">Categories</h2>
+    {% if categories %}
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            {% for category in categories %}
+                <a href="/?category={{ category.id }}" class="btn btn-success">{{ category.name }}</a>
+            {% endfor %}
+            <a href="/" class="btn">All Categories</a>
+        </div>
+    {% endif %}
+{% endblock %}

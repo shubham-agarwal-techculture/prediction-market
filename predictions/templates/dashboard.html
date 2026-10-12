@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Prediction Market{% endblock %}
+
+{% block content %}
+    <h2>Your Dashboard</h2>
+    
+    <div class="card">
+        <h3>Statistics</h3>
+        <p><strong>Score:</strong> {{ user.profile.score }}</p>
+        <p><strong>Total Predictions:</strong> {{ user.profile.total_predictions }}</p>
+        <p><strong>Correct Predictions:</strong> {{ user.profile.correct_predictions }}</p>
+        <p><strong>Win Rate:</strong> {{ user.profile.win_rate|floatformat:2 }}%</p>
+    </div>
+
+    <h2 style="margin-top: 30px;">Your Predictions</h2>
+    {% if predictions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Predicted Outcome</th>
+                    <th>Status</th>
+                    <th>Points Won</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prediction in predictions %}
+                    <tr>
+                        <td>{{ prediction.event.title }}</td>
+                        <td>{{ prediction.predicted_outcome }}</td>
+                        <td>
+                            <span class="badge badge-{{ prediction.status }}">
+                                {{ prediction.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ prediction.points_won }}</td>
+                        <td>{{ prediction.created_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You haven't made any predictions yet.</p>
+        <a href="/" class="btn">Browse Events</a>
+    {% endif %}
+{% endblock %}

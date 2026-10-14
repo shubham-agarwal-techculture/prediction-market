@@ -614,22 +614,56 @@ queryset = Event.objects.select_related("category").prefetch_related("entities")
 
 ### Authentication Strategy
 
-**Decision**: Multi-layer authentication approach.
+**Decision**: Multi-layer authentication approach with flexible options.
 
 **Layers**:
-1. **Session Authentication** - For web interface
-2. **Token Authentication** - For API access
-3. **OAuth Authentication** - For social login
+1. **Password-Based Authentication** - Default method for web interface
+2. **Session Authentication** - For web interface
+3. **Token Authentication** - For API access
+4. **OAuth Authentication** - Optional social login (Google, GitHub)
 
 **Rationale**:
-- **Flexibility**: Different methods for different use cases
+- **Flexibility**: Users can choose their preferred authentication method
+- **Accessibility**: Password-based auth works without external OAuth setup
 - **Security**: Token-based for API, session-based for web
-- **User Experience**: OAuth provides convenient social login
-- **Best Practice**: Industry-standard approach
+- **User Experience**: OAuth provides convenient social login for those who prefer it
+- **Best Practice**: Industry-standard approach with multiple options
+
+### Password-Based Authentication
+
+**Decision**: Implement traditional username/email + password authentication using django-allauth.
+
+**Implementation**:
+- Users can sign up with username, email, and password
+- Login supports both username and email
+- Password validation via Django's built-in validators
+- Password reset functionality via email
+- Custom styled login/signup pages
+
+**Configuration**:
+```python
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["username", "email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+```
+
+**Rationale**:
+- **Accessibility**: Works without any external service configuration
+- **Familiarity**: Users are familiar with password-based authentication
+- **Control**: Full control over user data and authentication flow
+- **Privacy**: No dependency on third-party OAuth providers
+- **Fallback**: Serves as fallback when OAuth is not configured
+
+**Features**:
+- Username and email login
+- Password strength validation
+- Password reset via email
+- Email verification (optional, can be enabled)
+- Custom branded login/signup pages
 
 ### OAuth Implementation
 
-**Decision**: Use django-allauth for OAuth.
+**Decision**: Use django-allauth for optional OAuth authentication.
 
 **Providers Supported**:
 - Google OAuth
@@ -640,11 +674,46 @@ queryset = Event.objects.select_related("category").prefetch_related("entities")
 - **User Experience**: Users don't need to remember another password
 - **Trust**: Users trust established OAuth providers
 - **Verification**: OAuth providers verify user identity
+- **Optional**: OAuth is optional; password auth works without it
 
 **Implementation Details**:
 - Callback URLs configured in Django settings
 - OAuth credentials stored in environment variables
 - Email verification optional (can be enabled for production)
+- Custom styled login/signup pages with OAuth buttons
+- Seamless integration with password-based auth
+
+**Hybrid Approach**:
+Login and signup pages show both:
+- Traditional username/email + password form
+- Social login buttons (Google, GitHub)
+- Users can choose their preferred method
+
+### Custom Authentication Templates
+
+**Decision**: Create custom login and signup templates with consistent branding.
+
+**Implementation**:
+- Custom `account/base.html` for auth pages
+- Custom `account/login.html` with password form and OAuth buttons
+- Custom `account/signup.html` with registration form and OAuth buttons
+- Consistent styling with main application
+- Error handling and validation display
+
+**Features**:
+- Username or email login support
+- Password reset link
+- Social login buttons (Google, GitHub)
+- Form validation error display
+- Help text for password requirements
+- Responsive design
+
+**Rationale**:
+- **Branding**: Consistent look and feel with main application
+- **User Experience**: Clear separation between password and OAuth options
+- **Flexibility**: Easy to customize authentication flow
+- **Professional**: Polished authentication experience
+- **Accessibility**: Accessible form design with proper labels
 
 ### User Profile Extension
 
@@ -963,11 +1032,15 @@ def generate_secure_random():
 
 **Structure**:
 ```
-base.html (base template)
+base.html (base template for main app)
 ├── home.html
 ├── dashboard.html
 ├── leaderboard.html
 └── event_detail.html
+
+account/base.html (base template for auth pages)
+├── account/login.html
+└── account/signup.html
 ```
 
 **Rationale**:
@@ -975,6 +1048,7 @@ base.html (base template)
 - **Consistency**: Consistent look and feel across pages
 - **Maintainability**: Changes to base template affect all pages
 - **Flexibility**: Child templates can override specific blocks
+- **Separation**: Separate base template for auth pages allows different styling
 
 ### CSS Strategy
 
@@ -1039,6 +1113,24 @@ base.html (base template)
 - **User Experience**: Context-aware navigation
 - **Security**: Show/hide links based on auth state
 - **Simplicity**: Easy to understand navigation
+
+### Authentication Page Design
+
+**Decision**: Centered authentication forms with social login options.
+
+**Layout**:
+- Centered container (max-width: 400px)
+- Clean form with labeled inputs
+- Error messages displayed at top
+- Social login section below password form
+- Links to sign up/login/forgot password
+- Consistent styling with main application
+
+**Rationale**:
+- **User Experience**: Focused, distraction-free authentication
+- **Accessibility**: Clear labels and error messages
+- **Flexibility**: Multiple authentication options visible
+- **Professional**: Polished, trustworthy appearance
 
 ### Error Display
 

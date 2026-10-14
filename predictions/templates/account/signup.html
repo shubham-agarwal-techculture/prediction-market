@@ -1,0 +1,65 @@
+{% extends "account/base.html" %}
+
+{% block head_title %}Sign Up{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <h2>Create Your Account</h2>
+        
+        <form method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <ul class="errorlist">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" id="id_username" autocomplete="username" required>
+                {% if form.username.help_text %}
+                    <p class="help-text">{{ form.username.help_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                <input type="email" name="email" id="id_email" autocomplete="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password1">Password:</label>
+                <input type="password" name="password1" id="id_password1" autocomplete="new-password" required>
+                {% if form.password1.help_text %}
+                    <p class="help-text">{{ form.password1.help_text }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password2">Confirm Password:</label>
+                <input type="password" name="password2" id="id_password2" autocomplete="new-password" required>
+            </div>
+            
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+        
+        <div class="social-login">
+            <h3>Or sign up with</h3>
+            <a href="{% url 'socialaccount_begin' 'google' %}" class="social-btn google-btn">Sign Up with Google</a>
+            <a href="{% url 'socialaccount_begin' 'github' %}" class="social-btn github-btn">Sign Up with GitHub</a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p>Already have an account? <a href="{% url 'account_login' %}">Login</a></p>
+        </div>
+    </div>
+{% endblock %}

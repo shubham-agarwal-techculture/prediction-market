@@ -6,7 +6,7 @@ A Django-based prediction market application where users can predict on various 
 
 - **Multiple Prediction Categories**: Sports, Financial, Random Events, and Custom categories
 - **Random Entity Behavior**: Background tasks generate random outcomes for events
-- **OAuth Authentication**: Support for Google and GitHub OAuth (django-allauth)
+- **Flexible Authentication**: Password-based authentication with optional OAuth (Google, GitHub)
 - **Point-based Scoring**: Users earn points for correct predictions
 - **REST API**: Full REST API for programmatic access
 - **User Dashboard**: Track predictions, scores, and win rates
@@ -18,7 +18,7 @@ A Django-based prediction market application where users can predict on various 
 - **Backend**: Django 4.2
 - **API Framework**: Django REST Framework
 - **Background Tasks**: Celery + Redis
-- **Authentication**: django-allauth (OAuth)
+- **Authentication**: django-allauth (Password + OAuth)
 - **Database**: SQLite (development)
 - **Frontend**: Django Templates
 
@@ -124,6 +124,9 @@ The application will be available at `http://localhost:8000`
 - `/dashboard/` - User dashboard with prediction history
 - `/leaderboard/` - Leaderboard
 - `/event/<id>/` - Event detail page
+- `/accounts/login/` - Login page (password or OAuth)
+- `/accounts/signup/` - Sign up page (password or OAuth)
+- `/accounts/logout/` - Logout
 - `/admin/` - Django admin interface
 
 ## Event Types
@@ -153,9 +156,24 @@ Access the admin interface at `/admin/` to:
 - Manage users
 - Manually resolve events if needed
 
-## OAuth Setup (Optional)
+## Authentication
 
-To enable OAuth authentication:
+The application supports two authentication methods:
+
+### Password-Based Authentication (Default)
+
+Users can sign up and login using:
+- Username
+- Email
+- Password
+
+Simply visit `/accounts/signup/` to create an account or `/accounts/login/` to log in.
+
+**Password Reset**: Users can reset their password via the "Forgot Password?" link on the login page. Password reset emails will be displayed in the console (development mode).
+
+### OAuth Authentication (Optional)
+
+To enable OAuth authentication, configure the providers:
 
 ### Google OAuth
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -174,9 +192,11 @@ To enable OAuth authentication:
 
 - SQLite is used for development. For production, consider PostgreSQL
 - Redis is required for Celery to work
-- OAuth setup is optional - the app works with regular Django auth
+- Password-based authentication is enabled by default
+- OAuth setup is optional - users can still sign up/login with username/email and password
 - The seed data command creates sample events that expire in 1-2 hours
 - Event resolution happens automatically via background tasks when events expire
+- Password reset emails are displayed in the console (development mode)
 
 ## Testing
 
